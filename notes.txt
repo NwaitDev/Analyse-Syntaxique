@@ -1,0 +1,31 @@
+Liste des symboles de TURTLE :
+
+	TERMINAUX :
+
+		# (commentaires)
+		234 | 3.14 | 1e10 | -2.0 (nombres -> double côté interprêteur)
+		red | green | 1.0 0.5 0.25 (couleurs -> symboles ou triplet de nombres entre 0 et 1 inclus)
+	
+	expressions (toutes de type nombre) :
+		nombre
+		l'opération unaire -
+		une opération binaire parmi +, -, *, /, ^
+		une fonction interne (sin(theta), cos(theta), tan(theta), sqrt(x), random(binf, bsup))
+		une variable
+		une expression entre parenthèses
+		
+	Commandes :
+		print (écrit la valeur de son paramètre sur l'erreur standard(commande pour le débug))
+		up | down (lever et baisser le crayon, pas de paramètre)
+		forward x | fw x  (avancer le crayon d'une distance x) 
+		backward x | bw x (reculer //////////////////////////)
+		position x y | pos x y (se placer à la coordonnée x y)
+		right theta | rt theta (se tourner vers la droite de theta (degrés?))
+		light theta | lt theta (////////////////// gauche //////////////////)
+		
+		
+		
+		
+		
+	
+	

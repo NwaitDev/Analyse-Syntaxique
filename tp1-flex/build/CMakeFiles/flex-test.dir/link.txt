@@ -1,0 +1,1 @@
+/usr/bin/cc -Wall -std=c99 -O2 -g  -rdynamic CMakeFiles/flex-test.dir/lexer.c.o CMakeFiles/flex-test.dir/main.c.o  -o flex-test 

@@ -1,0 +1,285 @@
+Terminals unused in grammar
+
+    '^'
+
+
+Grammar
+
+    0 $accept: input $end
+
+    1 input: %empty
+    2      | input line
+
+    3 line: '\n'
+    4     | expr '\n'
+
+    5 expr: "value"
+    6     | "name"
+    7     | '(' expr ')'
+    8     | expr '+' expr
+    9     | expr expr2
+   10     | expr '*' expr
+   11     | expr '/' expr
+
+   12 expr2: '-' expr
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '\n' (10) 3 4
+    '(' (40) 7
+    ')' (41) 7
+    '*' (42) 10
+    '+' (43) 8
+    '-' (45) 12
+    '/' (47) 11
+    '^' (94)
+    error (256)
+    "value" <value> (258) 5
+    "name" <name> (259) 6
+
+
+Nonterminals, with rules where they appear
+
+    $accept (13)
+        on left: 0
+    input (14)
+        on left: 1 2
+        on right: 0 2
+    line (15)
+        on left: 3 4
+        on right: 2
+    expr <value> (16)
+        on left: 5 6 7 8 9 10 11
+        on right: 4 7 8 9 10 11 12
+    expr2 <value> (17)
+        on left: 12
+        on right: 9
+
+
+State 0
+
+    0 $accept: . input $end
+
+    $default  reduce using rule 1 (input)
+
+    input  go to state 1
+
+
+State 1
+
+    0 $accept: input . $end
+    2 input: input . line
+
+    $end     shift, and go to state 2
+    "value"  shift, and go to state 3
+    "name"   shift, and go to state 4
+    '\n'     shift, and go to state 5
+    '('      shift, and go to state 6
+
+    line  go to state 7
+    expr  go to state 8
+
+
+State 2
+
+    0 $accept: input $end .
+
+    $default  accept
+
+
+State 3
+
+    5 expr: "value" .
+
+    $default  reduce using rule 5 (expr)
+
+
+State 4
+
+    6 expr: "name" .
+
+    $default  reduce using rule 6 (expr)
+
+
+State 5
+
+    3 line: '\n' .
+
+    $default  reduce using rule 3 (line)
+
+
+State 6
+
+    7 expr: '(' . expr ')'
+
+    "value"  shift, and go to state 3
+    "name"   shift, and go to state 4
+    '('      shift, and go to state 6
+
+    expr  go to state 9
+
+
+State 7
+
+    2 input: input line .
+
+    $default  reduce using rule 2 (input)
+
+
+State 8
+
+    4 line: expr . '\n'
+    8 expr: expr . '+' expr
+    9     | expr . expr2
+   10     | expr . '*' expr
+   11     | expr . '/' expr
+
+    '+'   shift, and go to state 10
+    '-'   shift, and go to state 11
+    '*'   shift, and go to state 12
+    '/'   shift, and go to state 13
+    '\n'  shift, and go to state 14
+
+    expr2  go to state 15
+
+
+State 9
+
+    7 expr: '(' expr . ')'
+    8     | expr . '+' expr
+    9     | expr . expr2
+   10     | expr . '*' expr
+   11     | expr . '/' expr
+
+    '+'  shift, and go to state 10
+    '-'  shift, and go to state 11
+    '*'  shift, and go to state 12
+    '/'  shift, and go to state 13
+    ')'  shift, and go to state 16
+
+    expr2  go to state 15
+
+
+State 10
+
+    8 expr: expr '+' . expr
+
+    "value"  shift, and go to state 3
+    "name"   shift, and go to state 4
+    '('      shift, and go to state 6
+
+    expr  go to state 17
+
+
+State 11
+
+   12 expr2: '-' . expr
+
+    "value"  shift, and go to state 3
+    "name"   shift, and go to state 4
+    '('      shift, and go to state 6
+
+    expr  go to state 18
+
+
+State 12
+
+   10 expr: expr '*' . expr
+
+    "value"  shift, and go to state 3
+    "name"   shift, and go to state 4
+    '('      shift, and go to state 6
+
+    expr  go to state 19
+
+
+State 13
+
+   11 expr: expr '/' . expr
+
+    "value"  shift, and go to state 3
+    "name"   shift, and go to state 4
+    '('      shift, and go to state 6
+
+    expr  go to state 20
+
+
+State 14
+
+    4 line: expr '\n' .
+
+    $default  reduce using rule 4 (line)
+
+
+State 15
+
+    9 expr: expr expr2 .
+
+    $default  reduce using rule 9 (expr)
+
+
+State 16
+
+    7 expr: '(' expr ')' .
+
+    $default  reduce using rule 7 (expr)
+
+
+State 17
+
+    8 expr: expr . '+' expr
+    8     | expr '+' expr .
+    9     | expr . expr2
+   10     | expr . '*' expr
+   11     | expr . '/' expr
+
+    '*'  shift, and go to state 12
+    '/'  shift, and go to state 13
+
+    $default  reduce using rule 8 (expr)
+
+    expr2  go to state 15
+
+
+State 18
+
+    8 expr: expr . '+' expr
+    9     | expr . expr2
+   10     | expr . '*' expr
+   11     | expr . '/' expr
+   12 expr2: '-' expr .
+
+    '*'  shift, and go to state 12
+    '/'  shift, and go to state 13
+
+    $default  reduce using rule 12 (expr2)
+
+    expr2  go to state 15
+
+
+State 19
+
+    8 expr: expr . '+' expr
+    9     | expr . expr2
+   10     | expr . '*' expr
+   10     | expr '*' expr .
+   11     | expr . '/' expr
+
+    $default  reduce using rule 10 (expr)
+
+    expr2  go to state 15
+
+
+State 20
+
+    8 expr: expr . '+' expr
+    9     | expr . expr2
+   10     | expr . '*' expr
+   11     | expr . '/' expr
+   11     | expr '/' expr .
+
+    $default  reduce using rule 11 (expr)
+
+    expr2  go to state 15

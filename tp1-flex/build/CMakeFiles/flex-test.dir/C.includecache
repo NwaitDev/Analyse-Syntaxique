@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/nwait/Documents/Analyse Syntaxique/tp1-flex/build/lexer.c
+stdio.h
+-
+string.h
+-
+errno.h
+-
+stdlib.h
+-
+inttypes.h
+-
+stdio.h
+-
+stdlib.h
+-
+unistd.h
+-
+
+/home/nwait/Documents/Analyse Syntaxique/tp1-flex/main.c
+stdio.h
+-
+lexer.h
+/home/nwait/Documents/Analyse Syntaxique/tp1-flex/lexer.h
+
+lexer.h
+stdio.h
+-
+string.h
+-
+errno.h
+-
+stdlib.h
+-
+inttypes.h
+-
+unistd.h
+-
+

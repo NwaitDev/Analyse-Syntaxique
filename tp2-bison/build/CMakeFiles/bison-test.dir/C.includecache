@@ -1,0 +1,86 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../main.h
+
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/build/lexer.c
+stdio.h
+-
+string.h
+-
+errno.h
+-
+stdlib.h
+-
+inttypes.h
+-
+stdio.h
+-
+stdlib.h
+-
+parser.h
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/build/parser.h
+unistd.h
+-
+
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/build/parser.c
+stdio.h
+-
+main.h
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/build/main.h
+limits.h
+-
+stdint.h
+-
+stddef.h
+-
+stddef.h
+-
+libintl.h
+-
+alloca.h
+-
+malloc.h
+-
+stdlib.h
+-
+stdlib.h
+-
+stdio.h
+-
+
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/build/parser.h
+
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/main.c
+main.h
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/main.h
+string.h
+-
+parser.h
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/parser.h
+lexer.h
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/lexer.h
+
+/home/nwait/Documents/Analyse Syntaxique/tp2-bison/main.h
+
+lexer.h
+stdio.h
+-
+string.h
+-
+errno.h
+-
+stdlib.h
+-
+inttypes.h
+-
+unistd.h
+-
+
+parser.h
+

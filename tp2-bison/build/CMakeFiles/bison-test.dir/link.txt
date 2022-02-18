@@ -1,0 +1,1 @@
+/usr/bin/cc -Wall -std=c99 -O2 -g  -rdynamic CMakeFiles/bison-test.dir/main.c.o CMakeFiles/bison-test.dir/parser.c.o CMakeFiles/bison-test.dir/lexer.c.o  -o bison-test 
