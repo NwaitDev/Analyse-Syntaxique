@@ -1,6 +1,8 @@
-Liste des symboles de TURTLE :
+TRUCS DE TURTLE :
 
-	TERMINAUX :
+TURTLE contient de nombreux symboles qui forment un ensemble de Symboles à analyser. En voici la liste exhaustive :
+
+	Elements de base :
 
 		# (commentaires)
 		234 | 3.14 | 1e10 | -2.0 (nombres -> double côté interprêteur)
@@ -8,11 +10,11 @@ Liste des symboles de TURTLE :
 	
 	expressions (toutes de type nombre) :
 		nombre
-		l'opération unaire -
-		une opération binaire parmi +, -, *, /, ^
-		une fonction interne (sin(theta), cos(theta), tan(theta), sqrt(x), random(binf, bsup))
-		une variable
-		une expression entre parenthèses
+		- nombre (l'opération unaire -)
+		nombre + nombre (une opération binaire parmi +, -, *, /, ^)
+		sin(nombre) (une fonction interne (sin(theta), cos(theta), tan(theta), sqrt(x), random(binf, bsup)))
+		VAR (une variable)
+		(expression) une expression entre parenthèses
 		
 	Commandes :
 		print (écrit la valeur de son paramètre sur l'erreur standard(commande pour le débug))
@@ -21,10 +23,101 @@ Liste des symboles de TURTLE :
 		backward x | bw x (reculer //////////////////////////)
 		position x y | pos x y (se placer à la coordonnée x y)
 		right theta | rt theta (se tourner vers la droite de theta (degrés?))
-		light theta | lt theta (////////////////// gauche //////////////////)
-		
-		
-		
+		left theta | lt theta (////////////////// gauche //////////////////)
+		heading theta | hd thetha (oriente le crayon dans la diretion Oy + thetha)
+		color param (change la couleur en celle de param)
+		home (reset tout)
+		set VAR expr (définie la valeur de la variable VAR à expr)
+		proc PROCEDURE bloc_de_commande|commande (définit la procédure PROCEDURE 
+			(bloc_de_commande ne peut pas contenir d'appel à proc))
+		call PROCEDURE (execute la PROCEDURE)
+	
+	BLOC DE COMMANDES :
+		{ .* } (.* est un ensemble de commandes)
+	
+	BOUCLE :
+		repeat nb_rep BLOC_DE_COMMANDES|COMMANDE (répète le bloc de commande nb_rep fois)
+	
+	VARIABLE :
+		[A-Z][A-Z0123456789]* (variable de portée globale)
+		PI = 3.14159265358979323846
+		SQRT2 = 1.41421356237309504880
+		SQRT3 = 1.7320508075688772935
+	
+	PROCEDURES :
+		[A-Z][A-Z0123456789]* (procédure)
+	
+	Quelques choses bonnes à savoir :
+		- un fichier contient une suite de commandes exec séquentiellement
+		- portée des variables et des procédures globales
+		- une procédure utilisée mais non définie provoque une erreur
+		- une procédure redéfinie provoque une erreur
+		- Au départ, le crayon est en position (0,0) direction nord baissé
+		- le non respect d'une précondition d'une fct ou d'un opérateur provoque une erreur.
+			les préconditions sont :
+			- sqrt neg_number
+			- intervalle invalide pour random
+			- paramètres hors du domaine de définition pour ^
+	
+	L'interpréteur doit produire une suite primitive de 
+		Color, LineTo, MoveTo 
+
+	
+	@ sera utilisé pour epsilon
+	endl pour \n
+	EOF pour end of file
+
+	
+	Grammaire :
+	(N,T,S,R) ->
+	
+	N = {
+		Commentaire,
+		Nombre,
+		Couleur,
+		Expr,
+		Bloc,
+		Commande,
+		Code,
+		Action,
+		Fichier
+	}
+	
+	T = {
+		#,
+		[0-9],
+		., -, +, *, /, ^, (, ), {, },
+		print,
+		up, down,
+		forward, fw, backward, bw, position, pos,
+		sin, cos, tan, sqrt, random,
+		right, rt, left, lt,
+		heading, hd,
+		color, home,
+		set, proc, call,
+		repeat
+		[A-Z]+,
+		red,
+		green,
+		blue,
+		cyan,
+		magenta,
+		yellow,
+		black,
+		gray,
+		white,
+		nimportequelscaractèresonsenfichecestpouruncommentaire
+	}
+	
+	S = Fichier
+	
+	R = {
+		Fichier ->  Code EOF | EOF
+		Code -> Action | Action endl Code
+		Action -> Commande | Commentaire | Commande Commentaire
+		Commentaire -> # nimportequelscaractèresonsenfichecestpouruncommentaire
+		Commande -> 
+	}
 		
 		
 	
