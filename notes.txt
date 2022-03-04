@@ -27,7 +27,7 @@ TURTLE contient de nombreux symboles qui forment un ensemble de Symboles à anal
 		heading theta | hd thetha (oriente le crayon dans la diretion Oy + thetha)
 		color param (change la couleur en celle de param)
 		home (reset tout)
-		set VAR expr (définie la valeur de la variable VAR à expr)
+		set VAR expr (définit la valeur de la variable VAR à expr)
 		proc PROCEDURE bloc_de_commande|commande (définit la procédure PROCEDURE 
 			(bloc_de_commande ne peut pas contenir d'appel à proc))
 		call PROCEDURE (execute la PROCEDURE)
@@ -81,6 +81,8 @@ TURTLE contient de nombreux symboles qui forment un ensemble de Symboles à anal
 		Code,
 		Action,
 		Fichier
+		Var
+		Procedure
 	}
 	
 	T = {
@@ -116,7 +118,18 @@ TURTLE contient de nombreux symboles qui forment un ensemble de Symboles à anal
 		Code -> Action | Action endl Code
 		Action -> Commande | Commentaire | Commande Commentaire
 		Commentaire -> # nimportequelscaractèresonsenfichecestpouruncommentaire
-		Commande -> 
+		Commande -> print Expr | up | down | forward Expr | fw Expr |
+					backward Expr | bw Expr | position Expr | pos Expr |
+					right Expr | rt Expr | left Expr | lt Expr | heading Expr | hd Expr |
+					color Couleur | home | set Var Expr | proc Procedure Bloc |
+					call Procedure | repeat Expr Bloc
+		Couleur -> Expr Expr Expr | red | green | blue | cyan | magenta | yellow | black | gray | white
+		Expr -> Nombre | - Expr | Expr +-*/^ Expr | sin(Expr) | Var | (Expr)
+		Nombre -> [0-9]+ | [0-9]+.[0-9]+ 
+		Var -> [A-Z][A-Z0123456789]* 
+		Procedure -> [A-Z][A-Z0123456789]* 
+		Bloc -> Commande | {Action}
+
 	}
 		
 		
