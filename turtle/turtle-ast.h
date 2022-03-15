@@ -64,19 +64,10 @@ struct ast_node {
   struct ast_node *next;  // the next node in the sequence
 };
 
-
-// TODO: make some constructors to use in parser.y
-// for example:
-struct ast_node *make_expr_value(double value);
-
-
 // root of the abstract syntax tree
 struct ast {
   struct ast_node *unit;
 };
-
-// do not forget to destroy properly! no leaks allowed!
-void ast_destroy(struct ast *self);
 
 // the execution context
 struct context {
@@ -89,13 +80,86 @@ struct context {
   // TODO: add variable handling
 };
 
-// create an initial context
+/*
+0 argument command
+KW_UP
+KW_DOWN
+KW_HOME
+*/
+struct ast_node *make_cmd_no_arg(enum ast_cmd cmd);
+
+/*
+1 argument command
+KW_PRINT expr
+KW_FORWARD expr
+KW_BACKWARD expr  
+KW_POSITION expr  
+KW_RIGHT expr     
+KW_LEFT expr      
+KW_HEADING expr
+KW_CALL NAME
+KW_COLOR COLORNAME
+*/
+struct ast_node *make_cmd_simple(enum ast_cmd cmd, struct ast_node *arg);
+
+/*
+2 arguments command
+KW_SET NAME expr
+KW_PROC NAME block
+KW_REPEAT expr block
+*/
+struct ast_node *make_cmd_2_args(enum ast_cmd cmd,struct ast_node *arg1, struct ast_node *arg2);
+
+/*
+3 argument command
+KW_COLOR expr1 expr2 expr3   
+*/
+struct ast_node *make_cmd_color_3_args(struct ast_node *red, struct ast_node *green,struct ast_node *blue);
+
+/*
+Binary expressions :
+  + - * / ^
+*/
+struct ast_node *make_expr_binop(char op, struct ast_node* arg1, struct ast_node* arg2);
+
+/*
+Unary expression :
+  -
+*/
+struct ast_node *make_expr_unnop(char op, struct ast_node* expr);
+
+/*
+Expression in the form of a name
+*/
+struct ast_node *make_expr_name(char* name);
+
+/*
+Expression as a function applied to an expression
+  cos sin tan random
+*/
+struct ast_node *make_expr_func(enum ast_func fun, struct ast_node* arg);
+
+/*
+Expression as a value
+*/
+struct ast_node *make_expr_value(double value);
+
+/*
+Expression that is used to count nb of loops in repeat
+*/
+struct ast_node *make_expr_block(struct ast_node* expr);
+
+
+void ast_destroy(struct ast *self);
+
+void ast_node_destroy(struct ast_node *self);
+
 void context_create(struct context *self);
+void context_destroy(struct context *self);
 
 // print the tree as if it was a Turtle program
 void ast_print(const struct ast *self);
 
 // evaluate the tree and generate some basic primitives
 void ast_eval(const struct ast *self, struct context *ctx);
-
 #endif /* TURTLE_AST_H */
