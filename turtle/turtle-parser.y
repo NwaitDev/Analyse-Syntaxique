@@ -18,11 +18,13 @@ void yyerror(struct ast *ret, const char *);
 %union {
   double value;
   char *name;
+  char *colorname;
   struct ast_node *node;
 }
 
 %token <value>    VALUE       "value"
 %token <name>     NAME        "name"
+%token <colorname> COLORNAME  "colorname"
 
 /* tokens relatifs aux commandes */
 %token            KW_FORWARD  "forward"
@@ -64,8 +66,11 @@ void yyerror(struct ast *ret, const char *);
 %token            KW_BRACK_LEFT "{"
 %token            KW_BRACK_RIGHT "}"
 
+/* tokens relatifs aux caractères spéciaux */
+%token            KW_COMMA ","
 
-%type <node> unit cmds cmd expr 
+
+%type <node> unit cmds cmd expr block
 
 %%
 
@@ -73,27 +78,33 @@ unit:
     cmds              { $$ = $1; ret->unit = $$; }
 ;
 
+block:
+  KW_BRACK_LEFT cmds KW_BRACK_RIGHT {$$ = make_expr_block($2);}
+  | cmd {$$ = make_expr_block($1);}
+;
+
 cmds:
     cmd cmds          { $1->next = $2; $$ = $1; }
-  | /* empty */       { $$ = NULL; /* end of the process */}   
+  | /* empty */       { $$ = NULL;/* end of the process */}   
 ;
 
 cmd:
-    KW_PRINT expr     { }
-  | KW_UP             { /* TODO */}
-  | KW_DOWN           { /* TODO */}
-  | KW_FORWARD expr   { /* TODO */}
-  | KW_BACKWARD expr  { /* TODO */}
-  | KW_POSITION expr  { /* TODO */}
-  | KW_RIGHT expr     { /* TODO */}
-  | KW_LEFT expr      { /* TODO */}
-  | KW_HEADING expr   { /* TODO */}
-  | KW_COLOR expr     { /* TODO */}
-  | KW_HOME           { /* TODO */}
-  | KW_SET NAME expr  { /* TODO */}
-  | KW_PROC NAME cmds { /* TODO */}
-  | KW_CALL NAME      { /* TODO */}
-  | KW_REPEAT cmds    { /* TODO */}
+    KW_PRINT expr     { $$ = make_cmd_simple(CMD_PRINT, $2);}
+  | KW_UP             { $$ = make_cmd_no_arg(CMD_UP);}
+  | KW_DOWN           { $$ = make_cmd_no_arg(CMD_DOWN);}
+  | KW_FORWARD expr   { $$ = make_cmd_simple(CMD_FORWARD, $2);}
+  | KW_BACKWARD expr  { $$ = make_cmd_simple(CMD_BACKWARD, $2);}
+  | KW_POSITION expr KW_COMMA expr  { $$ = make_cmd_pos($2,$4);}
+  | KW_RIGHT expr     { $$ = make_cmd_simple(CMD_RIGHT, $2);}
+  | KW_LEFT expr      { $$ = make_cmd_simple(CMD_LEFT, $2);}
+  | KW_HEADING expr   { $$ = make_cmd_simple(CMD_HEADING, $2);}
+  | KW_COLOR COLORNAME {$$ = make_cmd_color($2);}
+  | KW_COLOR expr KW_COMMA expr KW_COMMA expr {$$ = make_cmd_color_3_args($2,$4,$6);}
+  | KW_HOME           { $$ = make_cmd_no_arg(CMD_HOME);}
+  | KW_SET NAME expr  { $$ = make_cmd_set($2,$3);}
+  | KW_PROC NAME block { $$ = make_cmd_proc($2,$3);}
+  | KW_CALL NAME      { $$ = make_cmd_call($2);}
+  | KW_REPEAT expr block    { $$ = make_cmd_repeat($2,$3);}
 ;
 
 expr:

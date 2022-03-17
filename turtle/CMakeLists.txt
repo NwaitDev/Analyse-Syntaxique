@@ -29,6 +29,7 @@ add_executable(turtle
   turtle-ast.c
   ${BISON_turtle-parser_OUTPUTS}
   ${FLEX_turtle-lexer_OUTPUTS}
+  array.c
 )
 
 target_link_libraries(turtle m)

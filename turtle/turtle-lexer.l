@@ -5,7 +5,6 @@
 
 #include "turtle-ast.h"
 #include "turtle-parser.h"
-#include "strdup2.h"
 
 //Merci la L2
 
@@ -44,7 +43,7 @@ char *str_duplicate(const char *str){
 
 DIGIT [0-9]
 NUMBER {DIGIT}+
-DECIMALNUMBER NUMBER\.NUMBER|NUMBER
+DECIMALNUMBER {NUMBER}\.{NUMBER}|{NUMBER}
 VAR [A-Z][A-Z0123456789]*
 COLORNAME red|green|blue|cyan|magenta|yellow|black|gray|white
 
@@ -54,16 +53,20 @@ COLORNAME red|green|blue|cyan|magenta|yellow|black|gray|white
 
 "up"                  {return KW_UP;}
 "down"                {return KW_DOWN;}
-"forward|fw"        {return KW_FORWARD;}
-"backward|bw"       {return KW_BACKWARD;}
-"right|rt"          {return KW_RIGHT;}
-"left|lt"           {return KW_LEFT;}
-"heading|hd"        {return KW_HEADING;}
-"position|pos"      {return KW_POSITION;}
+forward|fw        {return KW_FORWARD;}
+backward|bw       {return KW_BACKWARD;}
+right|rt          {return KW_RIGHT;}
+left|lt           {return KW_LEFT;}
+heading|hd        {return KW_HEADING;}
+position|pos      {return KW_POSITION;}
 "home"                {return KW_HOME;}
 "color"               {return KW_COLOR;}
-"position|pos"      {return KW_POSITION;}
+position|pos      {return KW_POSITION;}
 "print"               {return KW_PRINT;}
+"set"                 {return KW_SET;}
+"proc"                {return KW_PROC;}
+"call"                {return KW_CALL;}
+"repeat"              {return KW_REPEAT;}
 
  /* reconnaissance des tokens relatifs aux fonctions */
 
@@ -83,17 +86,18 @@ COLORNAME red|green|blue|cyan|magenta|yellow|black|gray|white
 ")"                   {return KW_PARENTH_RIGHT;}
 "{"                   {return KW_BRACK_LEFT;}
 "}"                   {return KW_BRACK_RIGHT;}
+","                   {return KW_COMMA;}
 
 
 
-{COLORNAME}           {yylval.name = str_duplicate(yytext); return NAME;}
+{COLORNAME}           {yylval.colorname = str_duplicate(yytext); return COLORNAME;}
 {DECIMALNUMBER}       {yylval.value = strtod(yytext, NULL); return VALUE; }
 
  /* Variables et procédures */
 {VAR}                 {yylval.name = str_duplicate(yytext);return NAME;}
 
  /* lignes vides, commentaires et tabulations */
-"#.*"             /*ignore*/
+#.*             /*ignore*/
 [\n\t ]*          /*ignore*/
 
  /* Caractères non reconnus */

@@ -20,13 +20,17 @@ int main() {
 
   assert(root.unit);
 
+
   struct context ctx;
   context_create(&ctx);
-
+  ast_print(&root);
+  
   ast_eval(&root, &ctx);
-//   ast_print(&root);
+  ast_print(&root);
 
   ast_destroy(&root);
 
+  context_destroy(&ctx);
   return ret;
 }
+

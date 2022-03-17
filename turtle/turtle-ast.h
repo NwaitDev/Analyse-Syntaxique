@@ -30,7 +30,7 @@ enum ast_func {
 
 // kind of a node in the abstract syntax tree
 enum ast_kind {
-  KIND_CMD_SIMPLE,
+  KIND_CMD_SIMPLE, //up down rt lt hd bw fw pos home color print
   KIND_CMD_REPEAT,
   KIND_CMD_BLOCK,
   KIND_CMD_PROC,
@@ -75,9 +75,10 @@ struct context {
   double y;
   double angle;
   bool up;
+  double r, g, b;
 
-  // TODO: add procedure handling
-  // TODO: add variable handling
+  struct dynamic_tab* procs;
+  struct dynamic_tab* vars;
 };
 
 /*
@@ -98,17 +99,31 @@ KW_RIGHT expr
 KW_LEFT expr      
 KW_HEADING expr
 KW_CALL NAME
-KW_COLOR COLORNAME
 */
 struct ast_node *make_cmd_simple(enum ast_cmd cmd, struct ast_node *arg);
+struct ast_node *make_cmd_call(char *proc_to_call);
+
+/*
+Manage colors separatly because the parameter COLORNAME is
+not something that is represented by an expression(double) 
+but a string
+KW_COLOR COLORNAME
+*/
+struct ast_node *make_cmd_color(char* color);
 
 /*
 2 arguments command
+KW_POSITION expr expr
 KW_SET NAME expr
 KW_PROC NAME block
 KW_REPEAT expr block
 */
-struct ast_node *make_cmd_2_args(enum ast_cmd cmd,struct ast_node *arg1, struct ast_node *arg2);
+struct ast_node *make_cmd_pos(struct ast_node *arg1, struct ast_node *arg2);
+struct ast_node *make_cmd_set(char* name, struct ast_node *arg);
+struct ast_node *make_cmd_proc(char* name, struct ast_node *arg);
+struct ast_node *make_cmd_repeat(struct ast_node *expr, struct ast_node *block);
+
+
 
 /*
 3 argument command
