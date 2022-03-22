@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "array.h"
 #include <math.h>
 
@@ -28,6 +29,7 @@ struct ast_node *make_cmd_no_arg(enum ast_cmd cmd){
   node->kind = KIND_CMD_SIMPLE;
   node->u.cmd = cmd;
   node->children_count = 0;
+  node->next = NULL;
   return node;
 }
 
@@ -51,6 +53,7 @@ struct ast_node *make_cmd_simple(enum ast_cmd cmd, struct ast_node *arg){
   node->u.cmd = cmd;
   node->children_count = 1;
   node->children[0] = arg;
+  node->next = NULL;
   return node;
 }
 
@@ -63,6 +66,7 @@ struct ast_node *make_cmd_call(char *proc_to_call){
   node->kind = KIND_CMD_CALL;
   node->u.name = proc_to_call;
   node->children_count = 0;
+  node->next = NULL;
   return node;
 }
 
@@ -75,11 +79,10 @@ KW_COLOR COLORNAME
 struct ast_node *make_cmd_color(char* color){
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
   node->kind = KIND_CMD_SIMPLE;
-  node->u.value = CMD_COLOR;
+  node->u.cmd = CMD_COLOR;
   node->children_count = 3;
+  node->next = NULL;
 
-  //and making it right
-  //node->children[0] = arg;
   if(strcmp(color,"red")==0){
     node->children[0] = make_expr_value(1.0);
     node->children[1] = make_expr_value(0);
@@ -135,7 +138,6 @@ struct ast_node *make_cmd_color(char* color){
     return node;
   }
   fprintf(stderr,"cannot find any color called %s\n",color);
-  assert(false);
   return node;
 }
 
@@ -151,6 +153,7 @@ struct ast_node *make_cmd_pos(struct ast_node *arg1, struct ast_node *arg2){
   node->children_count = 2;
   node->children[0] = arg1;
   node->children[1] = arg2;
+  node->next = NULL;
   return node;
 }
 
@@ -164,6 +167,7 @@ struct ast_node *make_cmd_set(char* name, struct ast_node *expr){
   node->u.name = name;
   node->children_count = 1;
   node->children[0] = expr;
+  node->next = NULL;
   return node;
 }
 
@@ -177,6 +181,7 @@ struct ast_node *make_cmd_proc(char* name, struct ast_node *bloc){
   node->u.name = name;
   node->children_count = 1;
   node->children[0] = bloc;
+  node->next = NULL;
   return node;
 }
 
@@ -191,6 +196,7 @@ struct ast_node *make_cmd_repeat(struct ast_node *expr, struct ast_node *block){
   node->children_count = 2;
   node->children[0] = expr;
   node->children[1] = block;
+  node->next = NULL;
   return node;
 }
 
@@ -206,8 +212,10 @@ struct ast_node *make_cmd_color_3_args(struct ast_node *red, struct ast_node *gr
   node->children[0] = red;
   node->children[1] = green;
   node->children[2] = blue;
+  node->next = NULL;
   return node;
 }
+
 /*
 Binary expressions :
   + - * / ^
@@ -220,6 +228,7 @@ struct ast_node *make_expr_binop(char op, struct ast_node* arg1, struct ast_node
   node->children_count = 2;
   node->children[0] = arg1;
   node->children[1] = arg2;
+  node->next = NULL;
   return node;
 }
 
@@ -234,6 +243,7 @@ struct ast_node *make_expr_unnop(char op, struct ast_node* expr){
   node->u.op = op;
   node->children_count = 1;
   node->children[0] = expr;
+  node->next = NULL;
   return node;
 }
 /*
@@ -244,6 +254,7 @@ struct ast_node *make_expr_name(char* name){
   node->kind = KIND_EXPR_NAME;
   node->u.name = name;
   node->children_count = 0;
+  node->next = NULL;
   return node;
 }
 
@@ -257,6 +268,7 @@ struct ast_node *make_expr_func(enum ast_func fun, struct ast_node* arg){
   node->u.func = fun;
   node->children_count = 1;
   node->children[0]=arg;
+  node->next = NULL;
   return node;
 }
 
@@ -271,6 +283,7 @@ struct ast_node *make_expr_rand(struct ast_node* arg1, struct ast_node* arg2){
   node->children_count = 2;
   node->children[0]=arg1;
   node->children[0]=arg2;
+  node->next = NULL;
   return node;
 }
 
@@ -281,6 +294,7 @@ struct ast_node *make_expr_value(double value) {
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
   node->kind = KIND_EXPR_VALUE;
   node->u.value = value;
+  node->next = NULL;
   return node;
 }
 
@@ -293,6 +307,7 @@ struct ast_node *make_expr_block(struct ast_node* cmds){
   node->u.cmd = 0; //undefined behavour
   node->children_count = 1;
   node->children[0] = cmds;
+  node->next = NULL;
   return node;
 }
 
@@ -326,7 +341,7 @@ void ast_destroy(struct ast *self) {
 void context_create(struct context *self) {
   self=calloc(1,sizeof(struct context));
   self->angle = 0;
-  self ->up = false;
+  self->up = false;
   self->x = 0;
   self->y = 0;
   self->procs = init_tab();
@@ -336,6 +351,7 @@ void context_create(struct context *self) {
 void context_destroy(struct context *self){
   destroy_tab(self->procs);
   destroy_tab(self->vars);
+  free(self);
 }
 
 /*
@@ -420,6 +436,7 @@ struct ast_node* node_eval(struct ast_node* node, struct context *ctx){
           fprintf(stdout,"MoveTo %f %f\n",ctx->x,ctx->y);
           break;
 
+        //3 parameters command
         case CMD_COLOR:
           node->children[0] = node_eval(node->children[0],ctx);
           node->children[1] = node_eval(node->children[1],ctx);
@@ -442,6 +459,7 @@ struct ast_node* node_eval(struct ast_node* node, struct context *ctx){
       //Undefined lol
       break;
     case KIND_EXPR_BLOCK :
+      current = node->children[0];
       while(current!=NULL){
         node_eval(current, ctx);
         current = current->next;
@@ -548,37 +566,37 @@ void ast_symbol(const struct ast_node* self){
     case KIND_CMD_SIMPLE :
       switch(self->u.cmd){
         case CMD_UP :
-          fprintf(stderr,"up ");
+          fprintf(stderr,"up");
           break;
         case CMD_DOWN :
-          fprintf(stderr,"down ");
+          fprintf(stderr,"down");
           break;
         case CMD_RIGHT :
-          fprintf(stderr,"right ");
+          fprintf(stderr,"right");
           break;
         case CMD_LEFT :
-          fprintf(stderr,"left ");
+          fprintf(stderr,"left");
           break;
         case CMD_HEADING :
-          fprintf(stderr,"heading ");
+          fprintf(stderr,"heading");
           break;
         case CMD_FORWARD :
-          fprintf(stderr,"forward ");
+          fprintf(stderr,"forward");
           break;
         case CMD_BACKWARD :
-          fprintf(stderr,"backward ");
+          fprintf(stderr,"backward");
           break;
         case CMD_POSITION :
-          fprintf(stderr,"position ");
+          fprintf(stderr,"position");
           break;
         case CMD_HOME :
-          fprintf(stderr,"home ");
+          fprintf(stderr,"home");
           break;
         case CMD_COLOR :
-          fprintf(stderr,"color ");
+          fprintf(stderr,"color");
           break;
         case CMD_PRINT :
-          fprintf(stderr,"print ");
+          fprintf(stderr,"print");
           break;
       }
       break;
@@ -630,21 +648,32 @@ void ast_symbol(const struct ast_node* self){
       fprintf(stderr,"%s",self->u.name);
       break;
     case KIND_EXPR_BLOCK :
-      fprintf(stderr,"blockinrepeat ");
+      fprintf(stderr,"block ");
       break;
     default:
       fprintf(stderr,"whoops forgot to handle this one ");
   }
 }
 
-void ast_node_print(const struct ast_node* self,size_t indent){
-  for(size_t indentation = 0; indentation < indent; ++indentation){
-    fprintf(stderr, "\t");
-  }
-  ast_symbol(self);
-  fprintf(stderr,"\n");
-  for (size_t child=0; child < self->children_count;++child){
-    ast_node_print(self->children[child], indent+1);
+void ast_node_print(struct ast_node* self,size_t indent){
+  struct ast_node * current = self;
+  struct ast_node * next;
+  while(true){
+    next = current->next;
+    for(size_t indentation = 0; indentation < indent; ++indentation){
+      fprintf(stderr, "\t");
+    }
+    ast_symbol(current);
+    fprintf(stderr,"\n");
+    for (size_t child=0; child < current->children_count;++child){
+      ast_node_print(current->children[child], indent+1);
+    }
+    current = next;
+    if(next==NULL){
+      break;
+    }else{
+      //TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+    }
   }
 }
 

@@ -98,7 +98,7 @@ cmd:
   | KW_RIGHT expr     { $$ = make_cmd_simple(CMD_RIGHT, $2);}
   | KW_LEFT expr      { $$ = make_cmd_simple(CMD_LEFT, $2);}
   | KW_HEADING expr   { $$ = make_cmd_simple(CMD_HEADING, $2);}
-  | KW_COLOR COLORNAME {$$ = make_cmd_color($2);}
+  | KW_COLOR COLORNAME {fprintf(stderr,"COLOR : %s\n",$2 ); $$ = make_cmd_color($2); }
   | KW_COLOR expr KW_COMMA expr KW_COMMA expr {$$ = make_cmd_color_3_args($2,$4,$6);}
   | KW_HOME           { $$ = make_cmd_no_arg(CMD_HOME);}
   | KW_SET NAME expr  { $$ = make_cmd_set($2,$3);}
