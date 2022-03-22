@@ -282,7 +282,7 @@ struct ast_node *make_expr_rand(struct ast_node* arg1, struct ast_node* arg2){
   node->u.func = FUNC_RANDOM;
   node->children_count = 2;
   node->children[0]=arg1;
-  node->children[0]=arg2;
+  node->children[1]=arg2;
   node->next = NULL;
   return node;
 }
@@ -312,34 +312,30 @@ struct ast_node *make_expr_block(struct ast_node* cmds){
 }
 
 
-
-
-
 //AST create and destroy
 void ast_node_destroy(struct ast_node *self){
-  for(size_t i = 0; i<self->children_count;++i){
-    ast_node_destroy(self->children[i]);
-    free(self->children[i]);
+  struct ast_node* node = self;
+  for(size_t i = 0; i<node->children_count;++i){
+    ast_node_destroy(node->children[i]);
   }
-  free(self->children);
+  if(node->next==NULL){
+    free(self);
+  }else{
+    ast_node_destroy(node->next);
+    node->next=NULL;
+    free(self);
+  }
 }
 
 void ast_destroy(struct ast *self) {
-  struct ast_node *current = self->unit;
-  struct ast_node *next = self->unit->next;
-  while(current!=NULL){
-    ast_node_destroy(current);
-    current = next;
-    next = next->next;
-  }
+  ast_node_destroy(self->unit);
 }
 
 /*
  * context
  */
 
-void context_create(struct context *self) {
-  self=calloc(1,sizeof(struct context));
+void context_create(struct context *self){
   self->angle = 0;
   self->up = false;
   self->x = 0;
@@ -351,7 +347,6 @@ void context_create(struct context *self) {
 void context_destroy(struct context *self){
   destroy_tab(self->procs);
   destroy_tab(self->vars);
-  free(self);
 }
 
 /*
@@ -447,6 +442,7 @@ struct ast_node* node_eval(struct ast_node* node, struct context *ctx){
           break;
       }
       break;
+
     case KIND_CMD_REPEAT :
       node->children[0] = node_eval(node->children[0],ctx);
       potential_val = node->children[0]->u.value;
@@ -455,9 +451,11 @@ struct ast_node* node_eval(struct ast_node* node, struct context *ctx){
         potential_val-=1;
       }
       break;
+
     case KIND_CMD_BLOCK :
       //Undefined lol
       break;
+
     case KIND_EXPR_BLOCK :
       current = node->children[0];
       while(current!=NULL){
@@ -465,23 +463,29 @@ struct ast_node* node_eval(struct ast_node* node, struct context *ctx){
         current = current->next;
       }
       break;
+
     case KIND_CMD_PROC :
       append_node(ctx->procs,node);
       break;
+
     case KIND_CMD_SET :
       node->children[0] = node_eval(node->children[0],ctx);
       append_node(ctx->vars, node);
       break;
+
     case KIND_CMD_CALL :
-      if(NULL!=get_node(ctx->procs,node->u.name)){
-        node_eval(get_node(ctx->procs,node->u.name),ctx);
+      current = get_node(ctx->procs,node->u.name);
+      if(NULL!=current){
+        node_eval(current->children[0],ctx);
       }else{
         fprintf(stderr,"error, couldn't find any procedure called %s\n",node->u.name);
       }
       break;
+
     case KIND_EXPR_NAME :
-      if(NULL!=get_node(ctx->procs,node->u.name)){
-        node->children[0] = node_eval(get_node(ctx->vars,node->u.name),ctx);
+      current = get_node(ctx->procs,node->u.name);
+      if(NULL!=current){
+        node->children[0] = node_eval(current,ctx);
         node->u.value = node->children[0]->u.value; 
       }else{
         fprintf(stderr,"error, couldn't find any variable called %s\n",node->u.name);
@@ -503,6 +507,7 @@ struct ast_node* node_eval(struct ast_node* node, struct context *ctx){
           node->u.value = sqrt(node->children[0]->u.value);
           break;
         case FUNC_RANDOM:
+          printf("HEllo\n");
           node->children[0] = node_eval(node->children[0],ctx);
           node->children[1] = node_eval(node->children[1],ctx);
           potential_val = node->children[0]->u.value;
@@ -561,7 +566,7 @@ void ast_eval(const struct ast *self, struct context *ctx) {
  * print
  */
 
-void ast_symbol(const struct ast_node* self){
+void ast_symbol(struct ast_node* self){
   switch (self->kind){
     case KIND_CMD_SIMPLE :
       switch(self->u.cmd){
@@ -601,37 +606,37 @@ void ast_symbol(const struct ast_node* self){
       }
       break;
     case KIND_CMD_REPEAT :
-      fprintf(stderr,"repeat ");
+      fprintf(stderr,"repeat");
       break;
     case KIND_CMD_BLOCK :
-      fprintf(stderr,"block ");
+      fprintf(stderr,"block");
       break;
     case KIND_CMD_PROC :
       fprintf(stderr,"proc ");
       break;
     case KIND_CMD_CALL :
-      fprintf(stderr,"call ");
+      fprintf(stderr,"call");
       break;
     case KIND_CMD_SET :
-      fprintf(stderr,"set ");
+      fprintf(stderr,"set");
       break;
     
     case KIND_EXPR_FUNC :
       switch(self->u.func){
         case FUNC_COS:
-          fprintf(stderr,"cos ");
+          fprintf(stderr,"cos");
           break;
         case FUNC_RANDOM :
-          fprintf(stderr,"random ");
+          fprintf(stderr,"random");
           break;
         case FUNC_SIN :
-          fprintf(stderr,"sin ");
+          fprintf(stderr,"sin");
           break;
         case FUNC_SQRT :
-          fprintf(stderr,"sqrt ");
+          fprintf(stderr,"sqrt");
           break;
         case FUNC_TAN :
-          fprintf(stderr,"tan ");
+          fprintf(stderr,"tan");
           break;
       }
       break;

@@ -22,6 +22,7 @@ void yyerror(struct ast *ret, const char *);
   struct ast_node *node;
 }
 
+
 %token <value>    VALUE       "value"
 %token <name>     NAME        "name"
 %token <colorname> COLORNAME  "colorname"
@@ -70,6 +71,9 @@ void yyerror(struct ast *ret, const char *);
 %token            KW_COMMA ","
 
 
+%left '+' '-'
+%left '*' '/'
+
 %type <node> unit cmds cmd expr block
 
 %%
@@ -98,7 +102,7 @@ cmd:
   | KW_RIGHT expr     { $$ = make_cmd_simple(CMD_RIGHT, $2);}
   | KW_LEFT expr      { $$ = make_cmd_simple(CMD_LEFT, $2);}
   | KW_HEADING expr   { $$ = make_cmd_simple(CMD_HEADING, $2);}
-  | KW_COLOR COLORNAME {fprintf(stderr,"COLOR : %s\n",$2 ); $$ = make_cmd_color($2); }
+  | KW_COLOR COLORNAME { $$ = make_cmd_color($2); }
   | KW_COLOR expr KW_COMMA expr KW_COMMA expr {$$ = make_cmd_color_3_args($2,$4,$6);}
   | KW_HOME           { $$ = make_cmd_no_arg(CMD_HOME);}
   | KW_SET NAME expr  { $$ = make_cmd_set($2,$3);}
@@ -117,7 +121,7 @@ expr:
   |  KW_SIN expr {$$ = make_expr_func(FUNC_SIN, $2);}
   |  KW_COS expr {$$ = make_expr_func(FUNC_COS, $2);}
   |  KW_TAN expr {$$ = make_expr_func(FUNC_TAN, $2);}
-  |  KW_RANDOM expr {$$ = make_expr_func(FUNC_RANDOM, $2);}
+  |  KW_RANDOM KW_PARENTH_LEFT expr KW_COMMA expr KW_PARENTH_RIGHT {$$ = make_expr_rand($3,$5);}
   |  KW_SQRT expr {$$ = make_expr_func(FUNC_SQRT, $2);}
   |  NAME {$$ = make_expr_name($1);}
   |  VALUE {$$ = make_expr_value($1);}

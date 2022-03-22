@@ -79,6 +79,7 @@ position|pos      {return KW_POSITION;}
  /* reconnaissance des tokens relatifs aux caractères spéciaux*/
 
 "-"                   {return KW_MINUS;}
+"/"                   {return KW_DIV;}
 "+"                   {return KW_PLUS;}
 "*"                   {return KW_TIMES;}
 "^"                   {return KW_EXP;}

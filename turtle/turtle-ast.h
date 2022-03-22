@@ -155,6 +155,12 @@ Expression as a function applied to an expression
 struct ast_node *make_expr_func(enum ast_func fun, struct ast_node* arg);
 
 /*
+Expression as a function applied to an expression
+   random
+*/
+struct ast_node *make_expr_rand(struct ast_node* arg1, struct ast_node* arg2);
+
+/*
 Expression as a value
 */
 struct ast_node *make_expr_value(double value);
@@ -164,7 +170,8 @@ Expression that is used to count nb of loops in repeat
 */
 struct ast_node *make_expr_block(struct ast_node* expr);
 
-
+void ast_node_print(struct ast_node* self,size_t indent);
+void ast_symbol(struct ast_node* self);
 void ast_destroy(struct ast *self);
 
 void ast_node_destroy(struct ast_node *self);
