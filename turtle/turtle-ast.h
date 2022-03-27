@@ -86,6 +86,7 @@ struct context {
 KW_UP
 KW_DOWN
 KW_HOME
+Function that creates a node representing a node for a command with no argument
 */
 struct ast_node *make_cmd_no_arg(enum ast_cmd cmd);
 
@@ -98,53 +99,80 @@ KW_POSITION expr
 KW_RIGHT expr     
 KW_LEFT expr      
 KW_HEADING expr
-KW_CALL NAME
+Function that creates a node representing a node for a command with one argument of type expression
 */
 struct ast_node *make_cmd_simple(enum ast_cmd cmd, struct ast_node *arg);
+
+/*
+Function that creates a node representing a node for the call command
+*/
 struct ast_node *make_cmd_call(char *proc_to_call);
 
 /*
 Manage colors separatly because the parameter COLORNAME is
 not something that is represented by an expression(double) 
-but a string
+but by a string
 KW_COLOR COLORNAME
+Function that creates a node representing a color thank to the name of the color
 */
 struct ast_node *make_cmd_color(char* color);
 
+
+
+//2 arguments commands :
+
 /*
-2 arguments command
 KW_POSITION expr expr
-KW_SET NAME expr
-KW_PROC NAME block
-KW_REPEAT expr block
+Function that creates a node corresponding to a position setting
 */
 struct ast_node *make_cmd_pos(struct ast_node *arg1, struct ast_node *arg2);
+
+/*
+KW_SET NAME expr
+function that creates a node corresponding to the set command
+-> sets the value of the variable NAME to the value of expr
+*/
 struct ast_node *make_cmd_set(char* name, struct ast_node *arg);
+
+/*
+KW_PROC NAME block
+Function that creates a node corresponding to the command proc
+-> sets the call to NAME to the execution of the command block 
+*/
 struct ast_node *make_cmd_proc(char* name, struct ast_node *arg);
+
+/*
+KW_REPEAT expr block
+Function that creates a node corresponding to the repetition expr times 
+of the execution of the command block 
+*/
 struct ast_node *make_cmd_repeat(struct ast_node *expr, struct ast_node *block);
 
 
+//3 argument command
 
 /*
-3 argument command
-KW_COLOR expr1 expr2 expr3   
+KW_COLOR expr1 expr2 expr3
+Creates a node corresponding to a color which components in r, g and b are expr1, expr2 and expr3 respectively
 */
 struct ast_node *make_cmd_color_3_args(struct ast_node *red, struct ast_node *green,struct ast_node *blue);
 
 /*
 Binary expressions :
   + - * / ^
+  Creates a node corresponding to a a binary expression
 */
 struct ast_node *make_expr_binop(char op, struct ast_node* arg1, struct ast_node* arg2);
 
 /*
 Unary expression :
-  -
+  -Creates a node corresponding to a unary expression
 */
 struct ast_node *make_expr_unnop(char op, struct ast_node* expr);
 
 /*
 Expression in the form of a name
+  Creates a node representing a name of a variable
 */
 struct ast_node *make_expr_name(char* name);
 
@@ -166,17 +194,40 @@ Expression as a value
 struct ast_node *make_expr_value(double value);
 
 /*
-Expression that is used to count nb of loops in repeat
+  Expression that is used to represent a command block passed as argument of a command
 */
 struct ast_node *make_expr_block(struct ast_node* expr);
 
+/*
+function that prints a node and its children recursively
+it indents the printings to see the branches of the ast
+*/
 void ast_node_print(struct ast_node* self,size_t indent);
+
+/*
+prints the symbol corresponding to a node of the ast
+*/
 void ast_symbol(struct ast_node* self);
+
+
+/*
+Frees up space taken by the ast
+*/
 void ast_destroy(struct ast *self);
 
+/*
+Frees up space taken by the ast_node and its children
+*/
 void ast_node_destroy(struct ast_node *self);
 
+/*
+Creates a context to save the position, the variable names, the procedure names and the angles
+*/
 void context_create(struct context *self);
+
+/*
+frees up space taken by the context
+*/
 void context_destroy(struct context *self);
 
 // print the tree as if it was a Turtle program
@@ -184,4 +235,5 @@ void ast_print(const struct ast *self);
 
 // evaluate the tree and generate some basic primitives
 void ast_eval(const struct ast *self, struct context *ctx);
+
 #endif /* TURTLE_AST_H */

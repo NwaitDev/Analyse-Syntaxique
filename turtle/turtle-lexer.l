@@ -95,7 +95,7 @@ position|pos      {return KW_POSITION;}
 {DECIMALNUMBER}       {yylval.value = strtod(yytext, NULL); return VALUE; }
 
  /* Variables et procédures */
-{VAR}                 {yylval.name = str_duplicate(yytext);return NAME;}
+{VAR}                 {printf("text : %s\n",yytext); yylval.name = str_duplicate(yytext); return NAME;}
 
  /* lignes vides, commentaires et tabulations */
 #.*             /*ignore*/

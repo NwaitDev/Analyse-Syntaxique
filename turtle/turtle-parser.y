@@ -15,6 +15,7 @@ void yyerror(struct ast *ret, const char *);
 
 %parse-param { struct ast *ret }
 
+
 %union {
   double value;
   char *name;
@@ -22,7 +23,7 @@ void yyerror(struct ast *ret, const char *);
   struct ast_node *node;
 }
 
-
+/*We can meet three sorts of typed tokens*/
 %token <value>    VALUE       "value"
 %token <name>     NAME        "name"
 %token <colorname> COLORNAME  "colorname"
@@ -70,11 +71,11 @@ void yyerror(struct ast *ret, const char *);
 /* tokens relatifs aux caractères spéciaux */
 %token            KW_COMMA ","
 
-
+/*taking care of the priorities of operators*/
 %left '+' '-'
 %left '*' '/'
 
-%type <node> unit cmds cmd expr block
+%type <node> unit cmds cmd expr block /*defining the non-terminal symbols of the grammar*/
 
 %%
 
@@ -82,16 +83,19 @@ unit:
     cmds              { $$ = $1; ret->unit = $$; }
 ;
 
-block:
+/*a block is either 1 command or several commands between brackets*/
+block: 
   KW_BRACK_LEFT cmds KW_BRACK_RIGHT {$$ = make_expr_block($2);}
   | cmd {$$ = make_expr_block($1);}
 ;
 
+/*a sequence of commands is either a command followed by a sequenc of commands or an empty thing*/
 cmds:
     cmd cmds          { $1->next = $2; $$ = $1; }
   | /* empty */       { $$ = NULL;/* end of the process */}   
 ;
 
+/*listing the different commands*/
 cmd:
     KW_PRINT expr     { $$ = make_cmd_simple(CMD_PRINT, $2);}
   | KW_UP             { $$ = make_cmd_no_arg(CMD_UP);}
@@ -111,6 +115,7 @@ cmd:
   | KW_REPEAT expr block    { $$ = make_cmd_repeat($2,$3);}
 ;
 
+/*Listing the different expressions sorts*/
 expr:
     expr KW_PLUS expr {$$ = make_expr_binop('+',$1,$3);}
   |  expr KW_MINUS expr {$$ = make_expr_binop('-',$1,$3);}
